@@ -3,7 +3,7 @@ Monitoring server log file from browser.  The idea is to feed log fail to client
 ## Server
 The broadcast_tail_file.py will register the client applications feed the new content to the clients.
 ### Usage
-python broadcast_tail_file.py <log file> <port>
+python broadcast_tail_file.py [log file] [port]
 ### Prerequisites
 python 3.7 or above \
 websockets
