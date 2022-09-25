@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <title>Monitor log file</title>
+<body style="background-color:rgb(88, 202, 202);">
+
+<h2>Monitor log file</h2>
+
+<p>
+<b> URL: <input type="text" id="ws_url" name="ws_url" style="font-size:14px"  value="ws://localhost:4000">
+    <button id="connectbutton" style="font-size:14px" onclick="connect_ws()">Connect</button>
+</b>
+</p>
+<textarea id="logview" name="logview" style="font-size:14px; height:300px; max-height:1000px;min-height:100px;" readonly rows="10" cols="100"></textarea>
+
+<script>
+
+async function connect_ws() {
+    const wsurl=document.getElementById("ws_url");
+    const WSSocket = new WebSocket(wsurl.value);
+    const logvalue = document.getElementById("logview");
+    let opened=false;
+
+    WSSocket.onopen = (event) => {
+        wsurl.value += ' connected!'
+        wsurl.size += 10;
+        wsurl.readOnly = true;
+        document.getElementById("connectbutton").style.display="none";
+        logvalue.value = "";
+        opened=true;
+    }
+
+    WSSocket.onmessage = (event) => {
+        logvalue.value += event.data
+        logvalue.scrollTop = logvalue.scrollHeight;
+    }
+    WSSocket.onclose = (e) => {
+        if (opened) {
+            console.log('Socket is closed. Reconnect will be attempted.', e.reason);
+            setTimeout(function() {
+            connect_ws();
+            }, 1000);
+        }
+  };
+    WSSocket.onerror = (err) =>  {
+        console.error('Socket encountered error: ', err.message, 'Closing socket');
+        if (opened) {
+            console.log('from onerror');
+            WSSocket.close();
+        }
+        else {
+            logvalue.value = "Connectiion failed.  Please check the URL and try again.";
+        }
+    }
+}
+</script>
+
+</body>
+</html> 
+
